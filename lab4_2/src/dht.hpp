@@ -8,16 +8,13 @@ const uint8_t DHT_TYPE = DHT22;
 DHT dht(DHT_PIN, DHT_TYPE);
 
 void setupDHT() {
-    // dht.begin();
+    dht.begin();
     Serial.println("[DHT] Sensor initialized.");
 }
 
 void readData(float& temperature, float& humidity, float& heatIndex) {
-    // temperature = dht.readTemperature();
-    // humidity = dht.readHumidity();
-    // heatIndex = dht.computeHeatIndex(temperature, humidity, false);
-    temperature = 25.0 + random(-500, 500) / 100.0; // Simulated data
-    humidity = 50.0 + random(-2000, 2000) / 100.0;   // Simulated data
+    temperature = dht.readTemperature();
+    humidity = dht.readHumidity();
     heatIndex = dht.computeHeatIndex(temperature, humidity, false);
 }
 
