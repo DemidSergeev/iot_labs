@@ -37,6 +37,7 @@ bool setupMic() {
     };
     if (i2s_driver_install(I2S_PORT, &i2s_config, 0, NULL) != ESP_OK) { return false; }
     if (i2s_set_adc_mode(ADC_UNIT_1, ADC_CHANNEL) != ESP_OK) { return false; }
+    if (i2s_adc_enable(I2S_PORT) != ESP_OK) { return false; }
     Serial.println("[MIC] Microphone initialized successfully.");
     return true;
 }
@@ -46,18 +47,20 @@ void startPlotting() { is_plotting = true; Serial.println("[MIC] Plotter enabled
 void stopPlotting() { is_plotting = false; Serial.println("[MIC] Plotter disabled."); }
 
 /**
- * @brief CORRECTED: Reads a full stereo frame and prints only the left channel.
+ * @brief Reads a full stereo frame and prints only the left channel.
  */
 void readAndPrintSignal() {
-    if (!is_plotting) return;
-    
+    if (!is_plotting) {
+        return;
+    }
     uint16_t sample_buffer[2]; // Buffer for one full stereo frame (L+R = 4 bytes)
     size_t bytes_read = 0;
     i2s_read(I2S_PORT, sample_buffer, sizeof(sample_buffer), &bytes_read, pdMS_TO_TICKS(100));
 
     if (bytes_read > 0) {
-        // Print the left channel sample, correcting for ADC inversion
-        Serial.println(4095 - sample_buffer[0]);
+        // Print the 12 bits of left channel sample
+        Serial.print(">signal:");
+        Serial.println(sample_buffer[0] & 0x0FFF);
     }
 }
 
