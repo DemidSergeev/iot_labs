@@ -6,7 +6,7 @@
 
 namespace ntp {
 
-const char* ntpServer = "pool.ntp.org";
+const char* server = "pool.ntp.org";
 // Moscow Timezone: MSK (UTC+3)
 // POSIX Format: "MSK-3" 
 const char* timeZone = "MSK-3"; 
@@ -14,7 +14,7 @@ const char* timeZone = "MSK-3";
 void init() {
     Serial.println("[NTP] Setting up time...");
     // Config time with specific timezone string
-    configTzTime(timeZone, ntpServer);
+    configTzTime(timeZone, server);
 }
 
 bool isTimeSet() {

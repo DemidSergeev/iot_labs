@@ -32,7 +32,7 @@ void init() {
     lcd.print("Booting System..");
     
     if (print_to_serial) {
-        Serial.println("[LCD SIM] Booting System...");
+        Serial.println("[LCD] Booting System...");
     }
 }
 
@@ -46,7 +46,7 @@ void printStatus(String line1, String line2, bool serial_return_carriage = false
 
     // Serial Simulation
     if (print_to_serial) {
-        Serial.print("[LCD SIM] " + line1 + " | " + line2 + serial_return_carriage ? "\r" : "\n");
+        Serial.printf("[LCD] %-20s | %-20s%s", line1.c_str(), line2.c_str(), serial_return_carriage ? "\r" : "\n");
     }
 }
 

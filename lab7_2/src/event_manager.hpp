@@ -8,6 +8,13 @@
 
 namespace event_manager {
 
+// --- Configuration ---
+const int PIN_BOOT_BUTTON = 0; // The "BOOT" button on ESP32 boards
+const unsigned long BUTTON_DEBOUNCE_DELAY = 300; // ms
+
+// --- State Variables ---
+unsigned long lastButtonPressTime = 0;
+
 // --- Data Structures ---
 struct Event {
     String name;        // e.g., "New Year"
@@ -16,16 +23,23 @@ struct Event {
     String assignedUID; // The RFID tag ID linked to this event
 };
 
-// --- Configuration: Define Events Here ---
-// We have 3 slots. Initially, no UIDs are assigned ("").
+// --- Events ---
+// Initially, no UIDs are assigned ("").
 Event events[] = {
     {"New Year", 1, 1, ""}, // Jan 1st
-    {"Winter vacation", 25, 1, ""}, // Jan 25th
+    {"Semester end", 29, 12, ""}, // Dec 29th
+    {"Winter exams", 14, 1, ""}, // Jan 14th
     {"My birthday", 27, 7, ""}  // July 27th
 };
 
 const int EVENT_COUNT = sizeof(events) / sizeof(events[0]);
 int currentEventIndex = 0; // Default to the first event
+
+// --- Initialization ---
+void init() {
+    // GPIO 0 usually has an external pull-up, but internal doesn't hurt
+    pinMode(PIN_BOOT_BUTTON, INPUT_PULLUP);
+}
 
 // --- Helper: Calculate Target Timestamp (Handles "Next Year" logic) ---
 time_t getNextTargetTimestamp(int day, int month) {
@@ -52,6 +66,25 @@ time_t getNextTargetTimestamp(int day, int month) {
     }
     
     return target_ts;
+}
+
+// --- Logic: Handle Button Press ---
+void checkButton() {
+    // Button is usually Active LOW (0 when pressed)
+    if (digitalRead(PIN_BOOT_BUTTON) == LOW) {
+        // Simple Debounce
+        if (millis() - lastButtonPressTime > BUTTON_DEBOUNCE_DELAY) {
+            lastButtonPressTime = millis();
+            
+            // Cycle to next event
+            currentEventIndex = (currentEventIndex + 1) % EVENT_COUNT;
+            
+            lcd::printStatus("Switch by button", "#" + String(currentEventIndex + 1) + ": " + events[currentEventIndex].name);
+            
+            // Small delay to let the user read the text before countdown resumes
+            delay(1000); 
+        }
+    }
 }
 
 // --- Logic: Handle RFID Scans ---
@@ -115,9 +148,9 @@ void updateDisplay() {
         char line2[17];
         
         // Format: "Name       2026"
-        snprintf(line1, 17, "%-10s %d", e.name.c_str(), targetYear);
+        snprintf(line1, 20, "%-14s %d", e.name.c_str(), targetYear);
         // Format: "123d 12:00:00"
-        snprintf(line2, 17, "%3dd %02d:%02d:%02d", d, h, m, s);
+        snprintf(line2, 20, "in %3dd %02d:%02d:%02d", d, h, m, s);
         
         lcd::printStatus(String(line1), String(line2), true);
     } else {
@@ -127,6 +160,7 @@ void updateDisplay() {
 
 // --- Main Public Function ---
 void run() {
+    checkButton();
     processRFID();
     updateDisplay();
 }

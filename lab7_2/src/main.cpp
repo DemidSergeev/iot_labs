@@ -12,16 +12,17 @@ void setup() {
     // 1. Initialize Hardware
     lcd::init();
     rfid::init();
+    event_manager::init();
 
     // 2. Connect Network
-    lcd::printStatus("Connecting...", "WiFi Network");
+    lcd::printStatus("Connecting to WiFi", sta::ssid);
     if (!sta::connect_to_wifi()) {
-        lcd::printStatus("WiFi Failed", "Check Credentials");
+        lcd::printStatus("WiFi conn. failed", "Check Credentials");
         while(1) delay(1000);
     }
 
     // 3. Sync Time
-    lcd::printStatus("Syncing Time...", "NTP Server");
+    lcd::printStatus("Syncing Time by NTP", ntp::server);
     ntp::init();
     
     // Blocking wait for time sync (crucial for accurate countdowns)
@@ -30,7 +31,13 @@ void setup() {
         delay(500); 
     }
     
-    lcd::printStatus("System Ready", "Scan Tags...");
+    Serial.println("\n[MAIN] Time synchronized.");
+    struct tm current_tm = ntp::getCurrentTime();
+    Serial.printf("[MAIN] Current Local Time: %04d-%02d-%02d %02d:%02d:%02d\n", 
+                    current_tm.tm_year + 1900, current_tm.tm_mon + 1, current_tm.tm_mday,
+                    current_tm.tm_hour, current_tm.tm_min, current_tm.tm_sec);
+
+    lcd::printStatus("System is ready", "Scan some tags!");
     delay(1500);
 }
 
