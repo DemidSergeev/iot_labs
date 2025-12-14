@@ -34,9 +34,9 @@ void setup() {
     if (ntp::isTimeSet()) {
         Serial.println("\n[MAIN] Time synchronized.");
         struct tm current_tm = ntp::getCurrentTime();
-            Serial.printf("[MAIN] Current Local Time: %04d-%02d-%02d %02d:%02d:%02d\n", 
-                          current_tm.tm_year + 1900, current_tm.tm_mon + 1, current_tm.tm_mday,
-                          current_tm.tm_hour, current_tm.tm_min, current_tm.tm_sec);
+        Serial.printf("[MAIN] Current Local Time: %04d-%02d-%02d %02d:%02d:%02d\n", 
+                        current_tm.tm_year + 1900, current_tm.tm_mon + 1, current_tm.tm_mday,
+                        current_tm.tm_hour, current_tm.tm_min, current_tm.tm_sec);
         lcd::printStatus("Ready!", "Starting Timer");
         delay(2000);
         lcd::lcd.clear();
