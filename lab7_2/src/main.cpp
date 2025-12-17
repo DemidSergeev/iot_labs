@@ -9,19 +9,19 @@ void setup() {
     Serial.begin(115200);
     while(!Serial) delay(10);
 
-    // 1. Initialize Hardware
+    // 1. Initialize hardware
     lcd::init();
     rfid::init();
     event_manager::init();
 
-    // 2. Connect Network
+    // 2. Connect to network
     lcd::printStatus("Connecting to WiFi", sta::ssid);
     if (!sta::connect_to_wifi()) {
         lcd::printStatus("WiFi conn. failed", "Check Credentials");
         while(1) delay(1000);
     }
 
-    // 3. Sync Time
+    // 3. Initialize NTP (sync time)
     lcd::printStatus("Syncing Time by NTP", ntp::server);
     ntp::init();
     
@@ -38,13 +38,9 @@ void setup() {
                     current_tm.tm_hour, current_tm.tm_min, current_tm.tm_sec);
 
     lcd::printStatus("System is ready", "Scan some tags!");
-    delay(1500);
 }
 
 void loop() {
     // Run the application logic
     event_manager::run();
-
-    // Short delay to prevent flooding the I2C bus and Serial
-    delay(200); 
 }

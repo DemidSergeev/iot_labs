@@ -52,6 +52,10 @@ double get_signal_strength() {
   }
 }
 
+String get_ip() {
+  return WiFi.localIP().toString();
+}
+
 } // namespace sta
 
 #endif // STA_HPP
