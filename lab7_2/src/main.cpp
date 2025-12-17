@@ -4,6 +4,7 @@
 #include "lcd.hpp"
 #include "rfid.hpp"
 #include "event_manager.hpp"
+#include "ota.hpp"
 
 void setup() {
     Serial.begin(115200);
@@ -37,10 +38,15 @@ void setup() {
                     current_tm.tm_year + 1900, current_tm.tm_mon + 1, current_tm.tm_mday,
                     current_tm.tm_hour, current_tm.tm_min, current_tm.tm_sec);
 
+    // 4. Initialize OTA
+    ota::init();
+
     lcd::printStatus("System is ready", "Scan some tags!");
 }
 
 void loop() {
+    // Handle OTA updates
+    ota::run();
     // Run the application logic
     event_manager::run();
 }
