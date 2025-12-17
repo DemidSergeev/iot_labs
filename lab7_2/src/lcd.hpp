@@ -57,8 +57,8 @@ void printStatus(String line1, String line2, bool serial_return_carriage = false
 }
 
 // --- Helper: Show a message and lock the UI for X seconds ---
-void showMessage(String line1, String line2, int duration_ms) {
-    lcd::printStatus(line1, line2, true);
+void showMessage(String line1, String line2, int duration_ms, bool serial_return_carriage = true) {
+    lcd::printStatus(line1, line2, serial_return_carriage);
     // Set the future time when the UI is allowed to update again
     ui_message_unlock_time = millis() + duration_ms;
 }

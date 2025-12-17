@@ -83,7 +83,7 @@ void checkButton() {
             currentEventIndex = (currentEventIndex + 1) % EVENT_COUNT;
             
             lcd::showMessage("Switch by button", 
-                "#" + String(currentEventIndex + 1) + ": " + events[currentEventIndex].name, 1000
+                "#" + String(currentEventIndex + 1) + ": " + events[currentEventIndex].name, 1000, false
             );
         }
     }
