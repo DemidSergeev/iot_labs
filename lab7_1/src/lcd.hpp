@@ -59,11 +59,18 @@ void updateCountdown(int days, int hours, int minutes, int seconds, int targetYe
     lcd.print(" ");
     lcd.print(targetYear);
     lcd.print(" in ");
+    lcd.setCursor(0, 1);
 
+    if (days >= 1000) {
+        lcd.print("too far away :)");
+        if (print_to_serial) {
+            Serial.printf(" New Year %d is too far away :)\r", targetYear);
+        }
+        return;
+    }
     char buffer[17]; 
     snprintf(buffer, sizeof(buffer), "%3dd %02d:%02d:%02d", days, hours, minutes, seconds);
 
-    lcd.setCursor(0, 1);
     lcd.print(buffer);
 
     // Serial Simulation
